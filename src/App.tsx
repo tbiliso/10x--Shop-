@@ -1,7 +1,7 @@
-
-import Header from './components/Header'
 import CartProvider from './context/CartContext'
 import './App.css'
+import Products from './components/Products'
+import Header from './components/Header'
 
 function App() {
 
@@ -9,6 +9,7 @@ function App() {
   return (
     <CartProvider>
       <Header />
+      <Products />
     </CartProvider>
   )
 }
