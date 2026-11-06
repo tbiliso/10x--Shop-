@@ -1,11 +1,9 @@
-import { useState } from "react";
+
 export type CartItem ={
     id: number;
     title: string;
-    thumbnail: string;
     price: number;
-    discountPercentage: number;
-    stock: number;
+    image: string
     quantity: number;
 }
 
@@ -14,3 +12,8 @@ export type CartState ={
     }
 
 
+
+export type CartContextType={
+    items: CartItem[];
+    addToCart: (product: CartItem) => void
+}
