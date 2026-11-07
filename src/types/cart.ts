@@ -15,5 +15,7 @@ export type CartState ={
 
 export type CartContextType={
     items: CartItem[];
-    addToCart: (product: CartItem) => void
+    addToCart: (product: CartItem) => void;
+    updateQuantity: (id: number, quantity: number) => void;
+    removeItem: (id: number) => void;
 }

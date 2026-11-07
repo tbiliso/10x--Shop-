@@ -21,7 +21,7 @@ const { addToCart } = cart;
         {products.map((product) =>(
             <div key={product.id}>
                 <h3>{product.title}</h3>
-                <p>{product.price}</p>
+                <p>{product.price} GEL</p>
                 <img src={product.image} alt={product.title} />
                 <button onClick={() => addToCart({ ...product, quantity: 1 })}>Add To Cart</button>
                 </div>
