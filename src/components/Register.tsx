@@ -1,76 +1,84 @@
-import { useState } from "react";
+import { useFormik } from "formik";
+import * as Yup from "yup";
 import { Link, useNavigate } from "react-router-dom";
+import { useAuth } from "../context/AuthContext";
+import { useLanguage } from "../context/LanguageContext";
+
+const PASSWORD_REGEX = /^(?=.*[A-Z])(?=.*[!@#$%^&*(),.?":{}|<>]).{8,}$/;
 
 export function Register() {
-    const [name, setName] = useState("");
-    const [email, setEmail] = useState("");
-    const [password, setPassword] = useState("");
+    const { register } = useAuth();
+    const { t } = useLanguage();
     const navigate = useNavigate();
 
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        // აქ დაამატებ რეგისტრაციის ლოგიკას
-        alert(`წარმატებული რეგისტრაცია: ${name}`);
-        navigate("/login");
-    };
+    const formik = useFormik({
+        initialValues: { name: "", email: "", password: "" },
+        validationSchema: Yup.object({
+            name: Yup.string().required(t("nameRequired")),
+            email: Yup.string().email(t("invalidEmail")).required(t("emailRequired")),
+            password: Yup.string().matches(PASSWORD_REGEX, t("passwordRules")).required(t("passwordRequired")),
+        }),
+        onSubmit: (values) => {
+            register(values.name, values.email, values.password);
+            navigate("/");
+        },
+    });
 
     return (
-        <div className="flex justify-center items-center py-16">
-            <div className="bg-slate-900/80 backdrop-blur-2xl border border-slate-800 p-8 rounded-3xl shadow-2xl shadow-violet-500/10 w-full max-w-md relative overflow-hidden">
-                <div className="absolute -left-20 -bottom-20 w-40 h-40 bg-fuchsia-500/10 rounded-full blur-2xl pointer-events-none"></div>
+        <div className="flex justify-center items-center py-16 px-4">
+            <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-8 rounded-3xl shadow-2xl w-full max-w-md transition-colors">
+                <h2 className="text-2xl font-black text-slate-900 dark:text-white mb-2 text-center">{t("register")}</h2>
+                <p className="text-slate-500 dark:text-slate-400 text-xs text-center mb-6">{t("welcome")}</p>
 
-                <h2 className="text-2xl font-black text-white mb-2 text-center">რეგისტრაცია</h2>
-                <p className="text-slate-400 text-xs text-center mb-6">შექმენით ახალი ანგარიში მარტივად</p>
-
-                <form onSubmit={handleSubmit} className="space-y-4">
+                <form onSubmit={formik.handleSubmit} className="space-y-4">
                     <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">სახელი</label>
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{t("name")}</label>
                         <input
                             type="text"
-                            required
-                            value={name}
-                            onChange={(e) => setName(e.target.value)}
-                            placeholder="თქვენი სახელი"
-                            className="w-full bg-slate-800/80 border border-slate-700 text-white py-2.5 px-3.5 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all"
+                            {...formik.getFieldProps("name")}
+                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white py-2.5 px-3.5 rounded-xl text-xs focus:ring-2 focus:ring-violet-500 outline-none"
                         />
+                        {formik.touched.name && formik.errors.name && (
+                            <p className="text-red-500 text-[10px] mt-1">{formik.errors.name}</p>
+                        )}
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">ელ-ფოსტა</label>
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{t("email")}</label>
                         <input
                             type="email"
-                            required
-                            value={email}
-                            onChange={(e) => setEmail(e.target.value)}
-                            placeholder="example@gmail.com"
-                            className="w-full bg-slate-800/80 border border-slate-700 text-white py-2.5 px-3.5 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all"
+                            {...formik.getFieldProps("email")}
+                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white py-2.5 px-3.5 rounded-xl text-xs focus:ring-2 focus:ring-violet-500 outline-none"
                         />
+                        {formik.touched.email && formik.errors.email && (
+                            <p className="text-red-500 text-[10px] mt-1">{formik.errors.email}</p>
+                        )}
                     </div>
 
                     <div>
-                        <label className="block text-xs font-semibold text-slate-300 mb-1.5">პაროლი</label>
+                        <label className="block text-xs font-semibold text-slate-700 dark:text-slate-300 mb-1">{t("password")}</label>
                         <input
                             type="password"
-                            required
-                            value={password}
-                            onChange={(e) => setPassword(e.target.value)}
-                            placeholder="••••••••"
-                            className="w-full bg-slate-800/80 border border-slate-700 text-white py-2.5 px-3.5 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-violet-500 transition-all"
+                            {...formik.getFieldProps("password")}
+                            className="w-full bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white py-2.5 px-3.5 rounded-xl text-xs focus:ring-2 focus:ring-violet-500 outline-none"
                         />
+                        {formik.touched.password && formik.errors.password && (
+                            <p className="text-red-500 text-[10px] mt-1">{formik.errors.password}</p>
+                        )}
                     </div>
 
                     <button
                         type="submit"
-                        className="w-full bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white font-bold py-3 rounded-xl text-xs shadow-lg shadow-violet-600/30 transition-all active:scale-[0.98] mt-2"
+                        className="w-full bg-linear-to-r from-violet-600 to-fuchsia-600 hover:opacity-90 text-white font-bold py-3 rounded-xl text-xs shadow-lg transition active:scale-[0.98] mt-2"
                     >
-                        რეგისტრაცია
+                        {t("register")}
                     </button>
                 </form>
 
-                <p className="text-center text-xs text-slate-400 mt-6">
-                    უკვე გაქვთ ანგარიში?{" "}
-                    <Link to="/login" className="text-violet-400 font-bold hover:underline">
-                        შესვლა
+                <p className="text-center text-xs text-slate-500 dark:text-slate-400 mt-6">
+                    {t("hasAccount")}{" "}
+                    <Link to="/login" className="text-violet-600 dark:text-violet-400 font-bold hover:underline">
+                        {t("login")}
                     </Link>
                 </p>
             </div>

@@ -1,37 +1,38 @@
-import { createContext, useContext, useState, useEffect } from "react";
+import { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
 interface AuthContextType {
-    user: string | null;
-    login: (email: string) => boolean;
-    register: (name: string, email: string) => void;
+    user: { name: string; email: string } | null;
+    login: (email: string, pass: string) => boolean;
+    register: (name: string, email: string, pass: string) => void;
     logout: () => void;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-    const [user, setUser] = useState<string | null>(null);
+    const [user, setUser] = useState<{ name: string; email: string } | null>(() => {
+        const saved = localStorage.getItem("activeUser");
+        return saved ? JSON.parse(saved) : null;
+    });
 
-    useEffect(() => {
-        const activeUser = localStorage.getItem("activeUser");
-        if (activeUser) {
-            setUser(activeUser);
-        }
-    }, []);
-
-    const register = (name: string, email: string) => {
-        localStorage.setItem(`user_${email}`, JSON.stringify({ name, email }));
-        localStorage.setItem("activeUser", email);
-        setUser(email);
+    const register = (name: string, email: string, pass: string) => {
+        const userData = { name, email, pass };
+        localStorage.setItem(`user_${email}`, JSON.stringify(userData));
+        localStorage.setItem("activeUser", JSON.stringify({ name, email }));
+        setUser({ name, email });
     };
 
-    const login = (email: string): boolean => {
-        const storedUser = localStorage.getItem(`user_${email}`);
-        if (storedUser) {
-            localStorage.setItem("activeUser", email);
-            setUser(email);
-            return true;
+    const login = (email: string, pass: string): boolean => {
+        const stored = localStorage.getItem(`user_${email}`);
+        if (stored) {
+            const parsed = JSON.parse(stored);
+            if (parsed.pass === pass) {
+                const active = { name: parsed.name, email: parsed.email };
+                localStorage.setItem("activeUser", JSON.stringify(active));
+                setUser(active);
+                return true;
+            }
         }
         return false;
     };
@@ -50,10 +51,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
 export function useAuth() {
     const context = useContext(AuthContext);
-    if (!context) {
-        throw new Error("useAuth must be used within an AuthProvider");
-    }
+    if (!context) throw new Error("useAuth must be used within AuthProvider");
     return context;
 }
-
-export default AuthContext;
