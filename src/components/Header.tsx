@@ -1,22 +1,39 @@
+import { Link } from "react-router-dom";
+import useCart from "../context/useCart";
 
-import { CartContext } from "../context/CartContext"
-import { useContext } from "react"
-
-function Header(){
-    const cart = useContext(CartContext);
-    if (!cart) {
-    throw new Error("Header must be used within CartProvider");
+export function Header() {
+    const { items } = useCart();
     
-}
-const { items } = cart;
+    // გამოვთვალოთ კალათაში არსებული ნივთების საერთო რაოდენობა
+    const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
     return (
-    <header style={{display: "flex", justifyContent: "space-between", alignItems: "center", padding: "1rem 2rem", background:'#f5f5f5', borderBottom: '1px solid #ddd'}}>
-        <h2>ჩემი მაღაზია</h2>
-        <div>
-            🛒კალათა: {items.length} ნივთი
-        </div>
-    </header>
-)
+        <header className="bg-white shadow-sm sticky top-0 z-50">
+            <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+                {/* ლოგო / მთავარი გვერდის ლინკი */}
+                <Link to="/" className="text-2xl font-bold text-indigo-600">
+                    MyShop
+                </Link>
+                
+                {/* ნავიგაცია */}
+                <nav className="flex items-center gap-6">
+                    <Link to="/" className="text-gray-600 hover:text-indigo-600 font-medium transition">
+                        მთავარი
+                    </Link>
+
+                    {/* კალათის ღილაკი აიქონით და რაოდენობის ბეიჯით */}
+                    <Link to="/cart" className="relative flex items-center gap-1 text-gray-600 hover:text-indigo-600 font-medium transition">
+                        <span>კალათა</span>
+                        {totalItems > 0 && (
+                            <span className="absolute -top-2 -right-3 bg-indigo-600 text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold shadow-sm">
+                                {totalItems}
+                            </span>
+                        )}
+                    </Link>
+                </nav>
+            </div>
+        </header>
+    );
 }
 
-export default Header
+export default Header;
