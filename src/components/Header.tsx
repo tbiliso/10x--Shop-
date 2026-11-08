@@ -3,7 +3,7 @@ import useCart from "../context/useCart";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
-import { Sun, Moon, Globe, ShoppingCart, LogIn, LogOut } from "lucide-react";
+import { Sun, Moon, Globe, ShoppingCart, LogIn, LogOut, Package } from "lucide-react";
 
 export function Header() {
     const { items } = useCart();
@@ -26,11 +26,12 @@ export function Header() {
                     </span>
                 </Link>
 
-                <nav className="flex items-center gap-3 sm:gap-6">
-                    <Link to="/" className="text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 font-semibold text-sm transition-colors">
+                <nav className="flex items-center gap-2 sm:gap-4">
+                    <Link to="/" className="text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 font-semibold text-sm transition-colors px-2.5 py-1.5 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
                         {t("home")}
                     </Link>
 
+                    {/* კალათა */}
                     <Link to="/cart" className="relative flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 font-semibold text-sm transition-colors py-1.5 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
                         <div className="flex items-center gap-1.5">
                             <ShoppingCart className="w-4 h-4" />
@@ -41,6 +42,12 @@ export function Header() {
                                 {totalItems}
                             </span>
                         )}
+                    </Link>
+
+                    {/* შეკვეთების ისტორია (Orders) */}
+                    <Link to="/orders" className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 font-semibold text-sm transition-colors py-1.5 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+                        <Package className="w-4 h-4" />
+                        <span>{lang === "geo" ? "შეკვეთები" : "Orders"}</span>
                     </Link>
 
                     {/* ენის გადამრთველი */}
