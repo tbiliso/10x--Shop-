@@ -1,11 +1,23 @@
+import { useEffect } from "react";
 import { useOrders } from "../context/OrderContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from "../context/AuthContext";
+import { useNavigate, Link } from "react-router-dom";
 import { Package, Clock } from "lucide-react";
-import { Link } from "react-router-dom";
 
 export function Orders() {
     const { orders } = useOrders();
     const { t } = useLanguage();
+    const { user } = useAuth();
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        if (!user) {
+            navigate("/login");
+        }
+    }, [user, navigate]);
+
+    if (!user) return null;
 
     if (orders.length === 0) {
         return (

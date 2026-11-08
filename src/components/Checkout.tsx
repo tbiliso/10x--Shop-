@@ -1,7 +1,8 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import useCart from "../context/useCart";
 import { useOrders } from "../context/OrderContext";
 import { useLanguage } from "../context/LanguageContext";
+import { useAuth } from "../context/AuthContext";
 import { useNavigate } from "react-router-dom";
 import { CreditCard, ShieldCheck, CheckCircle2 } from "lucide-react";
 
@@ -9,7 +10,15 @@ export function Checkout() {
     const { items, removeItem } = useCart();
     const { addOrder } = useOrders();
     const { t } = useLanguage();
+    const { user } = useAuth();
     const navigate = useNavigate();
+
+    // თუ მომხმარებელი გალოგინებულია, გადავამისამართოთ ლოგინზე
+    useEffect(() => {
+        if (!user) {
+            navigate("/login");
+        }
+    }, [user, navigate]);
 
     const [name, setName] = useState("");
     const [address, setAddress] = useState("");
@@ -22,16 +31,14 @@ export function Checkout() {
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        if (items.length === 0) return;
+        if (!user || items.length === 0) return;
 
-        // შეკვეთის დამატება ისტორიაში
         addOrder(items, totalPrice, {
             name,
             address,
             cardMasked: cardNumber,
         });
 
-        // კალათის გასუფთავება
         items.forEach(item => removeItem(item.id));
         setIsSubmitted(true);
 
@@ -39,6 +46,8 @@ export function Checkout() {
             navigate("/orders");
         }, 2000);
     };
+
+    if (!user) return null;
 
     if (isSubmitted) {
         return (
