@@ -37,7 +37,15 @@ const translations: Record<Language, Record<string, string>> = {
         invalidEmail: "არასწორი მეილის ფორმატი",
         passwordRequired: "პაროლი სავალდებულოა",
         passwordRules: "პაროლი უნდა იყოს მინ. 8 სიმბოლო, შეიცავდეს დიდ ასოს და სიმბოლოს",
-        nameRequired: "სახელი სავალდებულოა"
+        nameRequired: "სახელი სავალდებულოა",
+        checkout: "შეკვეთის გაფორმება",
+        clearCart: "კალათის გასუფთავება",
+        total: "სულ ჯამი:",
+        orderSuccess: "შეკვეთა მზად არის!",
+        cartEmpty: "კალათა ცარიელია",
+        cartEmptyDesc: "დაამატეთ სასურველი პროდუქტები მთავარი გვერდიდან",
+        ordersHistory: "ჩემი შეკვეთები (Purchase History)",
+        noProducts: "პროდუქტი ვერ მოიძებნა"
     },
     en: {
         home: "Home",
@@ -66,7 +74,15 @@ const translations: Record<Language, Record<string, string>> = {
         invalidEmail: "Invalid email format",
         passwordRequired: "Password is required",
         passwordRules: "Min 8 chars, 1 uppercase letter, and 1 special symbol",
-        nameRequired: "Name is required"
+        nameRequired: "Name is required",
+        checkout: "Proceed to Checkout",
+        clearCart: "Clear Cart",
+        total: "Total:",
+        orderSuccess: "Order is ready!",
+        cartEmpty: "Your cart is empty",
+        cartEmptyDesc: "Add desired products from the home page",
+        ordersHistory: "Purchase History",
+        noProducts: "No products found"
     }
 };
 
@@ -95,3 +111,5 @@ export function useLanguage() {
     if (!context) throw new Error("useLanguage must be used within LanguageProvider");
     return context;
 }
+
+export default LanguageContext;
