@@ -35,7 +35,7 @@ export function Header() {
                         <ShoppingCart className="w-4 h-4" />
                         <span>{t("cart")}</span>
                         {totalItems > 0 && (
-                            <span className="absolute -top-1 -right-1 bg-linear-to-r from-violet-600 to-fuchsia-600 text-white text-[10px] min-w-[18px] h-[18px] flex items-center justify-center rounded-full font-bold shadow animate-pulse">
+                            <span className="absolute -top-1 -right-1 bg-linear-to-r from-violet-600 to-fuchsia-600 text-white text-[10px] min-w-45 h-4.5 flex items-center justify-center rounded-full font-bold shadow animate-pulse">
                                 {totalItems}
                             </span>
                         )}

@@ -1,5 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 import useCart from "../context/useCart";
+import { useLanguage } from "../context/LanguageContext";
 import type { CartItem } from "../types/cart";
 
 interface ApiProduct {
@@ -12,6 +13,7 @@ interface ApiProduct {
 
 export function Products() {
     const { addToCart } = useCart();
+    const { t } = useLanguage();
     const [products, setProducts] = useState<ApiProduct[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [loadingMore, setLoadingMore] = useState<boolean>(false);
@@ -89,17 +91,17 @@ export function Products() {
     if (loading) {
         return (
             <div className="flex justify-center items-center py-24">
-                <div className="animate-spin rounded-full h-10 w-10 border-4 border-indigo-600 border-t-transparent shadow-lg"></div>
+                <div className="animate-spin rounded-full h-10 w-10 border-4 border-violet-600 border-t-transparent shadow-lg"></div>
             </div>
         );
     }
 
     return (
         <div className="space-y-5 pb-10">
-            {/* მართვის პანელი - ფერადი გრადიენტით და შრუქ (Glassmorphism) ეფექტით */}
-            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-gradient-to-r from-indigo-50/80 via-purple-50/50 to-pink-50/80 backdrop-blur-md p-4 rounded-2xl border border-indigo-100/50 shadow-md transition-all duration-300">
-                <h2 className="text-xl font-extrabold bg-gradient-to-r from-indigo-600 to-purple-600 bg-clip-text text-transparent tracking-tight">
-                    პროდუქტები
+            {/* მართვის პანელი */}
+            <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-md transition-colors">
+                <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
+                    {t("home")}
                 </h2>
 
                 <div className="flex flex-wrap items-center gap-2">
@@ -107,15 +109,15 @@ export function Products() {
                     <div className="relative flex-1 sm:flex-initial">
                         <input
                             type="text"
-                            placeholder="ძებნა..."
+                            placeholder={t("search")}
                             value={searchQuery}
                             onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full sm:w-48 bg-white/90 border border-indigo-100 text-gray-700 py-1.5 px-3 pr-7 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 shadow-sm transition-all duration-200"
+                            className="w-full sm:w-48 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white py-1.5 px-3 pr-7 rounded-xl text-xs outline-none focus:ring-2 focus:ring-violet-500 transition-all"
                         />
                         {searchQuery && (
                             <button
                                 onClick={() => setSearchQuery("")}
-                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-gray-400 hover:text-indigo-600 text-xs font-bold transition-colors"
+                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-violet-600 text-xs font-bold transition-colors"
                             >
                                 ✕
                             </button>
@@ -126,11 +128,11 @@ export function Products() {
                     <select
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
-                        className="bg-white/90 border border-indigo-100 text-gray-700 py-1.5 px-2.5 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 shadow-sm transition-all duration-200 cursor-pointer"
+                        className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white py-1.5 px-2.5 rounded-xl text-xs outline-none cursor-pointer transition-all"
                     >
                         {categories.map(cat => (
                             <option key={cat} value={cat}>
-                                {cat === "all" ? "ყველა კატეგორია" : cat}
+                                {cat === "all" ? t("category") : cat}
                             </option>
                         ))}
                     </select>
@@ -139,43 +141,40 @@ export function Products() {
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
-                        className="bg-white/90 border border-indigo-100 text-gray-700 py-1.5 px-2.5 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500/30 focus:border-indigo-500 shadow-sm transition-all duration-200 cursor-pointer"
+                        className="bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-900 dark:text-white py-1.5 px-2.5 rounded-xl text-xs outline-none cursor-pointer transition-all"
                     >
-                        <option value="none">სორტირება</option>
-                        <option value="price-asc">ფასი: ზრდადი</option>
-                        <option value="price-desc">ფასი: კლებადი</option>
-                        <option value="title-asc">სახელი: A-Z</option>
-                        <option value="title-desc">სახელი: Z-A</option>
+                        <option value="none">{t("sort")}</option>
+                        <option value="price-asc">{t("priceAsc")}</option>
+                        <option value="price-desc">{t("priceDesc")}</option>
+                        <option value="title-asc">{t("titleAsc")}</option>
+                        <option value="title-desc">{t("titleDesc")}</option>
                     </select>
                 </div>
             </div>
 
-            {/* პროდუქტების ბადე — ზუსტად 4 ქარდი ჰორიზონტალურად */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-4 gap-4">
+            {/* პროდუქტების ბადე */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {filteredAndSortedProducts.length > 0 ? (
                     filteredAndSortedProducts.map(product => (
                         <div
                             key={product.id}
-                            className="group bg-white rounded-2xl border border-gray-100/80 p-3 flex flex-col justify-between shadow-md hover:shadow-xl hover:-translate-y-1.5 transition-all duration-300 relative overflow-hidden"
+                            className="group bg-white dark:bg-slate-900 rounded-2xl border border-slate-200 dark:border-slate-800 p-3 flex flex-col justify-between shadow-md hover:shadow-xl hover:-translate-y-1 transition-all duration-300 relative overflow-hidden"
                         >
-                            {/* დეკორატიული ფერადი ზოლი ქარდის თავში */}
-                            <div className="absolute top-0 left-0 right-0 h-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
-
                             <div>
-                                <div className="overflow-hidden rounded-xl mb-2.5 bg-gradient-to-br from-gray-50 to-indigo-50/30 p-2">
+                                <div className="overflow-hidden rounded-xl mb-2.5 bg-slate-50 dark:bg-slate-950 p-2 border border-slate-100 dark:border-slate-800 flex items-center justify-center">
                                     <img 
                                         src={product.thumbnail} 
                                         alt={product.title} 
-                                        className="w-full h-28 object-contain group-hover:scale-110 transition-transform duration-500 ease-out" 
+                                        className="w-full h-28 object-contain group-hover:scale-105 transition-transform duration-500" 
                                     />
                                 </div>
-                                <span className="inline-block bg-indigo-50 text-indigo-600 text-[9px] uppercase font-bold px-2 py-0.5 rounded-full mb-1 tracking-wider">
+                                <span className="inline-block bg-violet-500/10 text-violet-600 dark:text-violet-400 text-[9px] uppercase font-bold px-2 py-0.5 rounded-full mb-1 tracking-wider">
                                     {product.category}
                                 </span>
-                                <h3 className="font-semibold text-xs text-gray-800 line-clamp-1 group-hover:text-indigo-600 transition-colors">
+                                <h3 className="font-semibold text-xs text-slate-800 dark:text-slate-100 line-clamp-1">
                                     {product.title}
                                 </h3>
-                                <p className="text-indigo-600 font-extrabold text-sm mt-1">
+                                <p className="text-violet-600 dark:text-violet-400 font-extrabold text-sm mt-1">
                                     ${product.price}
                                 </p>
                             </div>
@@ -191,16 +190,16 @@ export function Products() {
                                     };
                                     addToCart(cartItem);
                                 }}
-                                className="mt-3 w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 active:scale-[0.97] text-white text-xs py-2 rounded-xl font-semibold shadow-md shadow-indigo-200 hover:shadow-lg hover:shadow-indigo-300 transition-all duration-200"
+                                className="mt-3 w-full bg-linear-to-r from-violet-600 to-fuchsia-600 hover:opacity-90 active:scale-[0.97] text-white text-xs py-2 rounded-xl font-semibold shadow-md transition"
                             >
-                                კალათაში დამატება
+                                {t("addToCart")}
                             </button>
                         </div>
                     ))
                 ) : (
-                    <div className="col-span-full text-center py-16 bg-white rounded-2xl border border-dashed border-indigo-200 text-gray-400 text-xs shadow-inner">
+                    <div className="col-span-full text-center py-16 bg-white dark:bg-slate-900 rounded-2xl border border-dashed border-slate-300 dark:border-slate-700 text-slate-400 text-xs">
                         <span className="text-3xl block mb-2">🔍</span>
-                        პროდუქტი ვერ მოიძებნა
+                        {t("noProducts")}
                     </div>
                 )}
             </div>
@@ -211,9 +210,9 @@ export function Products() {
                     <button
                         onClick={handleLoadMore}
                         disabled={loadingMore}
-                        className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white px-8 py-3 rounded-2xl text-xs font-bold shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300 transition-all duration-300 active:scale-95 disabled:opacity-50"
+                        className="bg-linear-to-r from-violet-600 to-fuchsia-600 hover:opacity-90 text-white px-8 py-3 rounded-2xl text-xs font-bold shadow-lg transition active:scale-95 disabled:opacity-50"
                     >
-                        {loadingMore ? "იტვირთება..." : "მეტის ნახვა (+30)"}
+                        {loadingMore ? t("loading") : t("loadMore")}
                     </button>
                 </div>
             )}
