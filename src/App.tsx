@@ -11,6 +11,8 @@ import { Login } from "./components/Login";
 import { Register } from "./components/Register";
 import { Checkout } from "./components/Checkout";
 import { Orders } from "./components/Orders";
+import { ProfilePage } from "./components/ProfilePage";
+// import { ProtectedRoute } from "./routes/ProtectedRoute"; // <-- თუ დაცული მარშრუტი გაქვს
 
 export function App() {
   return (
@@ -27,6 +29,20 @@ export function App() {
                     <Route path="/cart" element={<Cart />} />
                     <Route path="/checkout" element={<Checkout />} />
                     <Route path="/orders" element={<Orders />} />
+                    
+                    {/* 2. დაამატე /profile მარშრუტი */}
+                    <Route path="/profile" element={<ProfilePage />} />
+                    
+                    {/* ან თუ ProtectedRoute გაქვს:
+                    <Route 
+                      path="/profile" 
+                      element={
+                        <ProtectedRoute>
+                          <ProfilePage />
+                        </ProtectedRoute>
+                      } 
+                    /> */}
+
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
                   </Routes>

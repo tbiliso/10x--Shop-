@@ -3,7 +3,7 @@ import useCart from "../context/useCart";
 import { useAuth } from "../context/AuthContext";
 import { useLanguage } from "../context/LanguageContext";
 import { useTheme } from "../context/ThemeContext";
-import { Sun, Moon, Globe, ShoppingCart, LogIn, LogOut, Package } from "lucide-react";
+import { Sun, Moon, Globe, ShoppingCart, LogIn, LogOut, Package, User } from "lucide-react";
 
 export function Header() {
     const { items } = useCart();
@@ -49,6 +49,14 @@ export function Header() {
                         <Package className="w-4 h-4" />
                         <span>{lang === "geo" ? "შეკვეთები" : "Orders"}</span>
                     </Link>
+
+                    {/* პროფილის ბმული (გამოჩნდება მხოლოდ ავტორიზებულზე) */}
+                    {user && (
+                        <Link to="/profile" className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 font-semibold text-sm transition-colors py-1.5 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
+                            <User className="w-4 h-4" />
+                            <span>{lang === "geo" ? "პროფილი" : "Profile"}</span>
+                        </Link>
+                    )}
 
                     {/* ენის გადამრთველი */}
                     <button
