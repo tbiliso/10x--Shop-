@@ -1,14 +1,39 @@
+import { useState } from "react";
 import useCart from "../context/useCart";
 import { useLanguage } from "../context/LanguageContext";
 import { Link, useNavigate } from "react-router-dom";
-import { Trash2, ShoppingBag } from "lucide-react";
+import { Trash2, ShoppingBag, Tag, Check, X } from "lucide-react";
 
 export function Cart() {
-    const { items, updateQuantity, removeItem } = useCart();
+    const { 
+        items, 
+        updateQuantity, 
+        removeItem, 
+        subtotal, 
+        discountAmount, 
+        total, 
+        promoCode, 
+        discountPercent, 
+        applyPromoCode, 
+        removePromoCode 
+    } = useCart() as any; // უზრუნველყოფს ტიპების თავსებადობას
+
     const { t } = useLanguage();
     const navigate = useNavigate();
 
-    const totalPrice = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const [inputCode, setInputCode] = useState("");
+    const [promoError, setPromoError] = useState("");
+
+    const handleApplyPromo = (e: React.FormEvent) => {
+        e.preventDefault();
+        setPromoError("");
+        const res = applyPromoCode(inputCode);
+        if (!res.success) {
+            setPromoError(res.message);
+        } else {
+            setInputCode("");
+        }
+    };
 
     if (items.length === 0) {
         return (
@@ -39,7 +64,7 @@ export function Cart() {
             </h2>
 
             <div className="space-y-4">
-                {items.map(item => (
+                {items.map((item: any) => (
                     <div 
                         key={item.id} 
                         className="flex flex-col sm:flex-row items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4 gap-4"
@@ -88,16 +113,70 @@ export function Cart() {
                     </div>
                 ))}
 
-                <div className="mt-8 flex flex-col sm:flex-row justify-between items-center pt-6 border-t border-slate-200 dark:border-slate-800 gap-4">
-                    <div className="text-lg font-black text-slate-900 dark:text-white">
-                        {t("total")} <span className="text-violet-600 dark:text-violet-400">${totalPrice.toFixed(2)}</span>
+                {/* Promo Code Section */}
+                <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
+                    {!promoCode ? (
+                        <form onSubmit={handleApplyPromo} className="flex flex-col sm:flex-row gap-2 max-w-md">
+                            <div className="relative flex-1">
+                                <Tag className="absolute left-3 top-2.5 w-4 h-4 text-slate-400" />
+                                <input
+                                    type="text"
+                                    placeholder="Promo code (e.g. 10X10)"
+                                    value={inputCode}
+                                    onChange={(e) => setInputCode(e.target.value)}
+                                    className="w-full pl-9 pr-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-medium text-slate-900 dark:text-white focus:outline-none focus:ring-2 focus:ring-violet-500"
+                                />
+                            </div>
+                            <button
+                                type="submit"
+                                className="bg-slate-900 dark:bg-slate-800 hover:bg-violet-600 dark:hover:bg-violet-600 text-white px-5 py-2 rounded-xl text-xs font-bold transition shadow-sm"
+                            >
+                                Apply
+                            </button>
+                        </form>
+                    ) : (
+                        <div className="flex items-center justify-between max-w-md p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl">
+                            <div className="flex items-center gap-2 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+                                <Check className="w-4 h-4" />
+                                <span>Promo "{promoCode}" applied (-{discountPercent}%)</span>
+                            </div>
+                            <button
+                                onClick={removePromoCode}
+                                className="text-slate-400 hover:text-red-500 transition p-1"
+                                title="Remove promo"
+                            >
+                                <X className="w-4 h-4" />
+                            </button>
+                        </div>
+                    )}
+                    {promoError && <p className="text-red-500 text-[11px] mt-1.5 font-medium">{promoError}</p>}
+                </div>
+
+                {/* Summary / Totals */}
+                <div className="mt-6 pt-6 border-t border-slate-200 dark:border-slate-800 space-y-2">
+                    <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400 font-medium">
+                        <span>Subtotal</span>
+                        <span>${subtotal?.toFixed(2) ?? "0.00"}</span>
                     </div>
-                    <button 
-                        className="w-full sm:w-auto bg-linear-to-r from-violet-600 to-fuchsia-600 hover:opacity-95 text-white px-8 py-3 rounded-2xl font-bold text-xs transition shadow-lg active:scale-95"
-                        onClick={() => navigate("/checkout")}
-                    >
-                        {t("checkout")}
-                    </button>
+
+                    {promoCode && (
+                        <div className="flex justify-between text-xs text-emerald-600 dark:text-emerald-400 font-medium">
+                            <span>Discount ({promoCode})</span>
+                            <span>-${discountAmount?.toFixed(2) ?? "0.00"}</span>
+                        </div>
+                    )}
+
+                    <div className="flex justify-between items-center pt-2">
+                        <div className="text-lg font-black text-slate-900 dark:text-white">
+                            {t("total")} <span className="text-violet-600 dark:text-violet-400">${total?.toFixed(2) ?? "0.00"}</span>
+                        </div>
+                        <button 
+                            className="w-full sm:w-auto bg-linear-to-r from-violet-600 to-fuchsia-600 hover:opacity-95 text-white px-8 py-3 rounded-2xl font-bold text-xs transition shadow-lg active:scale-95"
+                            onClick={() => navigate("/checkout")}
+                        >
+                            {t("checkout")}
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>

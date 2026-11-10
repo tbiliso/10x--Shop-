@@ -1,5 +1,5 @@
 
-export type CartItem ={
+export type CartItem = {
     id: number;
     title: string;
     price: number;
@@ -7,15 +7,22 @@ export type CartItem ={
     quantity: number;
 }
 
-export type CartState ={
+export type CartState = {
     items: CartItem[];
-    }
+}
 
 
 
-export type CartContextType={
+export type CartContextType = {
     items: CartItem[];
     addToCart: (product: CartItem) => void;
     updateQuantity: (id: number, quantity: number) => void;
     removeItem: (id: number) => void;
+    promoCode: string | null;
+    discountPercent: number;
+    applyPromoCode: (code: string) => { success: boolean; message: string };
+    removePromoCode: () => void;
+    subtotal: number;
+    discountAmount: number;
+    total: number;
 }
