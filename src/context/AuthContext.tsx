@@ -39,6 +39,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const logout = () => {
         localStorage.removeItem("activeUser");
+        localStorage.removeItem("shop_cart");  // ვწმენდთ კალათას ლოგაუთისას
+        localStorage.removeItem("shop_promo"); // ვწმენდთ პრომო კოდს
         setUser(null);
     };
 

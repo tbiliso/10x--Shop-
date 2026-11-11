@@ -9,7 +9,6 @@ function CartProvider({ children }: { children: React.ReactNode }) {
         return saved ? JSON.parse(saved) : [];
     });
 
-    // Promo code State (save on localStorage)
     const [promoCode, setPromoCode] = useState<string | null>(() => {
         return localStorage.getItem("shop_promo") || null;
     });
@@ -36,7 +35,6 @@ function CartProvider({ children }: { children: React.ReactNode }) {
         });
     };
 
-    // change quantity (+ / -)
     const updateQuantity = (productId: number, quantity: number) => {
         if (quantity <= 0) {
             removeItem(productId);
@@ -47,25 +45,27 @@ function CartProvider({ children }: { children: React.ReactNode }) {
         ));
     };
 
-    // delete item
     const removeItem = (productId: number) => {
         setItems(prev => prev.filter(item => item.id !== productId));
     };
 
-    // check promo code
-    const applyPromoCode = (code: string) => {
-        // trim code and write lowewrcase
-        const formatted = code.trim().toLowerCase();
+    // კალათისა და პრომო კოდის სრული გასუფთავება
+    const clearCart = () => {
+        setItems([]);
+        setPromoCode(null);
+        setDiscountPercent(0);
+        localStorage.removeItem("shop_cart");
+        localStorage.removeItem("shop_promo");
+    };
 
-        // check strarts or not code name with "promo"
+    const applyPromoCode = (code: string) => {
+        const formatted = code.trim().toLowerCase();
         const match = formatted.match(/^promo(\d+)$/);
 
         if (match) {
             const discountValue = parseInt(match[1], 10);
-
-            // check is discount amount between 10 and 50 and step is 5
             if (discountValue >= 10 && discountValue <= 50 && discountValue % 5 === 0) {
-                setPromoCode(formatted.toUpperCase()); // მაგ: PROMO25
+                setPromoCode(formatted.toUpperCase());
                 setDiscountPercent(discountValue);
                 localStorage.setItem("shop_promo", formatted.toUpperCase());
                 return { success: true, message: `Promo code applied successfully (-${discountValue}%)!` };
@@ -75,14 +75,12 @@ function CartProvider({ children }: { children: React.ReactNode }) {
         return { success: false, message: "Invalid promo code (use promo10 to promo50 with step 5)" };
     };
 
-    // delete/disable promo code
     const removePromoCode = () => {
         setPromoCode(null);
         setDiscountPercent(0);
         localStorage.removeItem("shop_promo");
     };
 
-    // sum ammount
     const subtotal = items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
     const discountAmount = (subtotal * discountPercent) / 100;
     const total = Math.max(0, subtotal - discountAmount);
@@ -94,6 +92,7 @@ function CartProvider({ children }: { children: React.ReactNode }) {
                 addToCart, 
                 updateQuantity, 
                 removeItem,
+                clearCart,
                 promoCode,
                 discountPercent,
                 applyPromoCode,

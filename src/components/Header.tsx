@@ -6,13 +6,19 @@ import { useTheme } from "../context/ThemeContext";
 import { Sun, Moon, Globe, ShoppingCart, LogIn, LogOut, Package, User } from "lucide-react";
 
 export function Header() {
-    const { items } = useCart();
+    const { items, clearCart } = useCart(); // <--- აქ დავამატეთ clearCart
     const { user, logout } = useAuth();
     const { lang, toggleLang, t } = useLanguage();
     const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
 
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
+
+    const handleLogout = () => {
+        logout();           // 1. ვშლით სესიას და activeUser-ს
+        clearCart();        // 2. ვწმენდთ კალათასა და პრომო კოდს
+        navigate("/login"); // 3. გადავყავართ ლოგინის გვერდზე
+    };
 
     return (
         <header className="sticky top-0 z-50 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md border-b border-slate-200 dark:border-slate-800 transition-colors">
@@ -78,7 +84,7 @@ export function Header() {
                     {/* ავტორიზაციის ღილაკი */}
                     {user ? (
                         <button
-                            onClick={() => { logout(); navigate("/"); }}
+                            onClick={handleLogout} // <--- აქ ვიძახებთ ახალ ჰენდლერს
                             className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-red-500/10 hover:text-red-500 text-slate-700 dark:text-slate-300 text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 transition"
                         >
                             <LogOut className="w-3.5 h-3.5" />
