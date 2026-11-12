@@ -49,7 +49,7 @@ function CartProvider({ children }: { children: React.ReactNode }) {
         setItems(prev => prev.filter(item => item.id !== productId));
     };
 
-    // კალათისა და პრომო კოდის სრული გასუფთავება
+    // Clear cart and Promo codes
     const clearCart = () => {
         setItems([]);
         setPromoCode(null);

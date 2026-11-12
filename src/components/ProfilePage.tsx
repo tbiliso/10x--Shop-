@@ -13,8 +13,8 @@ export const ProfilePage: React.FC = () => {
   });
 
   useEffect(() => {
-    // ვცდილობთ ამოვიღოთ რეგისტრაციის მონაცემები შენახული ობიექტიდან
-    const savedUser = localStorage.getItem("shop_user"); // ან შესაბამისი გასაღები, რომლითაც რეგისტრაციაში ინახავ
+    // Get registration values from localstorage
+    const savedUser = localStorage.getItem("shop_user"); 
     if (savedUser) {
       try {
         const parsed = JSON.parse(savedUser);
@@ -26,7 +26,7 @@ export const ProfilePage: React.FC = () => {
         console.error("Failed to parse user data", e);
       }
     } else if (auth && "user" in auth && auth.user) {
-      // ალტერნატივა თუ AuthContext-ში ინახება
+      
       const u = auth.user as { name?: string; username?: string; email?: string };
       setUserData({
         name: u.name || u.username || "User",
@@ -37,7 +37,7 @@ export const ProfilePage: React.FC = () => {
 
   const handleDeleteAccount = () => {
     if (window.confirm("Are you sure you want to delete your account? This action cannot be undone.")) {
-      // ვასუფთავებთ ყველა ლოკალურ მონაცემს და ვასრულებთ ლოგაუტს
+      
       localStorage.removeItem("shop_cart");
       localStorage.removeItem("shop_orders");
       localStorage.removeItem("shop_promo");

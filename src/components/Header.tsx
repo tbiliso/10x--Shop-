@@ -6,7 +6,7 @@ import { useTheme } from "../context/ThemeContext";
 import { Sun, Moon, Globe, ShoppingCart, LogIn, LogOut, Package, User } from "lucide-react";
 
 export function Header() {
-    const { items, clearCart } = useCart(); // <--- აქ დავამატეთ clearCart
+    const { items, clearCart } = useCart(); 
     const { user, logout } = useAuth();
     const { lang, toggleLang, t } = useLanguage();
     const { theme, toggleTheme } = useTheme();
@@ -15,9 +15,9 @@ export function Header() {
     const totalItems = items.reduce((sum, item) => sum + item.quantity, 0);
 
     const handleLogout = () => {
-        logout();           // 1. ვშლით სესიას და activeUser-ს
-        clearCart();        // 2. ვწმენდთ კალათასა და პრომო კოდს
-        navigate("/login"); // 3. გადავყავართ ლოგინის გვერდზე
+        logout();           
+        clearCart();        
+        navigate("/login"); 
     };
 
     return (
@@ -37,7 +37,7 @@ export function Header() {
                         {t("home")}
                     </Link>
 
-                    {/* კალათა */}
+                    {/* cart */}
                     <Link to="/cart" className="relative flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 font-semibold text-sm transition-colors py-1.5 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
                         <div className="flex items-center gap-1.5">
                             <ShoppingCart className="w-4 h-4" />
@@ -50,13 +50,13 @@ export function Header() {
                         )}
                     </Link>
 
-                    {/* შეკვეთების ისტორია (Orders) */}
+                    {/* Purchase (order) history */}
                     <Link to="/orders" className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 font-semibold text-sm transition-colors py-1.5 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
                         <Package className="w-4 h-4" />
                         <span>{lang === "geo" ? "შეკვეთები" : "Orders"}</span>
                     </Link>
 
-                    {/* პროფილის ბმული (გამოჩნდება მხოლოდ ავტორიზებულზე) */}
+                    
                     {user && (
                         <Link to="/profile" className="flex items-center gap-1.5 text-slate-600 dark:text-slate-300 hover:text-violet-600 dark:hover:text-violet-400 font-semibold text-sm transition-colors py-1.5 px-3 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800">
                             <User className="w-4 h-4" />
@@ -64,7 +64,7 @@ export function Header() {
                         </Link>
                     )}
 
-                    {/* ენის გადამრთველი */}
+                    {/* language toglle */}
                     <button
                         onClick={toggleLang}
                         className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl border border-slate-200 dark:border-slate-700 text-xs font-bold text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
@@ -73,7 +73,7 @@ export function Header() {
                         {lang.toUpperCase()}
                     </button>
 
-                    {/* თემის გადამრთველი (Dark/Light) */}
+                    {/*  (Dark/Light) */}
                     <button
                         onClick={toggleTheme}
                         className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 transition"
@@ -81,10 +81,10 @@ export function Header() {
                         {theme === "dark" ? <Sun className="w-4 h-4 text-amber-400" /> : <Moon className="w-4 h-4 text-slate-700" />}
                     </button>
 
-                    {/* ავტორიზაციის ღილაკი */}
+                    {/* auth */}
                     {user ? (
                         <button
-                            onClick={handleLogout} // <--- აქ ვიძახებთ ახალ ჰენდლერს
+                            onClick={handleLogout} // 
                             className="flex items-center gap-1.5 bg-slate-100 dark:bg-slate-800 hover:bg-red-500/10 hover:text-red-500 text-slate-700 dark:text-slate-300 text-xs font-bold px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-700 transition"
                         >
                             <LogOut className="w-3.5 h-3.5" />

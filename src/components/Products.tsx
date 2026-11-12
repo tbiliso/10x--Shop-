@@ -27,7 +27,7 @@ export function Products() {
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [sortBy, setSortBy] = useState<string>("none");
 
-    // 1. თავდაპირველი პროდუქტებისა და სრული კატეგორიების წამოღება
+    // 1. Get products and categoryes
     useEffect(() => {
         Promise.all([
             fetch(`https://dummyjson.com/products?limit=${limit}&skip=0`, { cache: "no-store" }).then(res => res.json()),
@@ -50,10 +50,11 @@ export function Products() {
             });
     }, []);
 
-    // 2. კატეგორიის შეცვლისას პროდუქტების თავიდან წამოღება შესაბამისი ენდპოინტიდან
+    
     useEffect(() => {
         if (selectedCategory === "all") {
-            // თუ "all"-ია, ვტვირთავთ მთავარ სიას
+            
+            
             fetch(`https://dummyjson.com/products?limit=${limit}&skip=0`, { cache: "no-store" })
                 .then(res => res.json())
                 .then(data => {
@@ -62,7 +63,7 @@ export function Products() {
                     setSkip(0);
                 });
         } else {
-            // თუ არჩეულია კონკრეტული კატეგორია, მივმართავთ კატეგორიების ენდპოინტს
+            
             fetch(`https://dummyjson.com/products/category/${selectedCategory}`, { cache: "no-store" })
                 .then(res => res.json())
                 .then(data => {
@@ -131,14 +132,14 @@ export function Products() {
 
     return (
         <div className="space-y-5 pb-10">
-            {/* მართვის პანელი */}
+            {/* control panel */}
             <div className="flex flex-col sm:flex-row justify-between items-stretch sm:items-center gap-3 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-md transition-colors">
                 <h2 className="text-xl font-extrabold text-slate-900 dark:text-white tracking-tight">
                     {t("home")}
                 </h2>
 
                 <div className="flex flex-wrap items-center gap-2">
-                    {/* საძიებო ველი */}
+                    {/* search */}
                     <div className="relative flex-1 sm:flex-initial">
                         <input
                             type="text"
@@ -157,7 +158,7 @@ export function Products() {
                         )}
                     </div>
 
-                    {/* კატეგორიების ფილტრი (სრული სიით) */}
+                    {/* category filter */}
                     <select
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
@@ -170,7 +171,7 @@ export function Products() {
                         ))}
                     </select>
 
-                    {/* სორტირება */}
+                    {/* sorting */}
                     <select
                         value={sortBy}
                         onChange={(e) => setSortBy(e.target.value)}
@@ -185,7 +186,7 @@ export function Products() {
                 </div>
             </div>
 
-            {/* პროდუქტების ბადე */}
+            {/* products */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
                 {filteredAndSortedProducts.length > 0 ? (
                     filteredAndSortedProducts.map(product => (
@@ -237,7 +238,7 @@ export function Products() {
                 )}
             </div>
 
-            {/* მეტის ნახვა (Load More) ღილაკი */}
+            {/*  (Load More)  */}
             {products.length < total && searchQuery === "" && (
                 <div className="flex justify-center pt-8 pb-4">
                     <button
