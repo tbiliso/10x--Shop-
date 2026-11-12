@@ -20,7 +20,7 @@ export function Products() {
     
     const [skip, setSkip] = useState<number>(0);
     const [total, setTotal] = useState<number>(0);
-    const limit = 30;
+    const limit = 100;
 
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
