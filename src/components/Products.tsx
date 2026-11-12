@@ -15,36 +15,74 @@ export function Products() {
     const { addToCart } = useCart();
     const { t } = useLanguage();
     const [products, setProducts] = useState<ApiProduct[]>([]);
+    const [categoriesList, setCategoriesList] = useState<string[]>([]);
     const [loading, setLoading] = useState<boolean>(true);
     const [loadingMore, setLoadingMore] = useState<boolean>(false);
     
     const [skip, setSkip] = useState<number>(0);
     const [total, setTotal] = useState<number>(0);
-    const limit = 100;
+    const limit = 30;
 
     const [searchQuery, setSearchQuery] = useState<string>("");
     const [selectedCategory, setSelectedCategory] = useState<string>("all");
     const [sortBy, setSortBy] = useState<string>("none");
 
+    // 1. თავდაპირველი პროდუქტებისა და სრული კატეგორიების წამოღება
     useEffect(() => {
-        fetch(`https://dummyjson.com/products?limit=${limit}&skip=0`, { cache: "no-store" })
-            .then(res => res.json())
-            .then(data => {
-                setProducts(data.products);
-                setTotal(data.total);
+        Promise.all([
+            fetch(`https://dummyjson.com/products?limit=${limit}&skip=0`, { cache: "no-store" }).then(res => res.json()),
+            fetch(`https://dummyjson.com/products/categories`, { cache: "no-store" }).then(res => res.json())
+        ])
+            .then(([productData, categoriesData]) => {
+                setProducts(productData.products);
+                setTotal(productData.total);
+                
+                const extractedCategories = categoriesData.map((cat: any) => 
+                    typeof cat === "string" ? cat : cat.slug
+                );
+                setCategoriesList(extractedCategories);
+                
                 setLoading(false);
             })
             .catch(err => {
-                console.error("შეცდომა:", err);
+                console.error("შეცდომა მონაცემების წამოღებისას:", err);
                 setLoading(false);
             });
     }, []);
+
+    // 2. კატეგორიის შეცვლისას პროდუქტების თავიდან წამოღება შესაბამისი ენდპოინტიდან
+    useEffect(() => {
+        if (selectedCategory === "all") {
+            // თუ "all"-ია, ვტვირთავთ მთავარ სიას
+            fetch(`https://dummyjson.com/products?limit=${limit}&skip=0`, { cache: "no-store" })
+                .then(res => res.json())
+                .then(data => {
+                    setProducts(data.products);
+                    setTotal(data.total);
+                    setSkip(0);
+                });
+        } else {
+            // თუ არჩეულია კონკრეტული კატეგორია, მივმართავთ კატეგორიების ენდპოინტს
+            fetch(`https://dummyjson.com/products/category/${selectedCategory}`, { cache: "no-store" })
+                .then(res => res.json())
+                .then(data => {
+                    setProducts(data.products);
+                    setTotal(data.total);
+                    setSkip(0);
+                })
+                .catch(err => console.error("შეცდომა კატეგორიის წამოღებისას:", err));
+        }
+    }, [selectedCategory]);
 
     const handleLoadMore = () => {
         const nextSkip = skip + limit;
         setLoadingMore(true);
 
-        fetch(`https://dummyjson.com/products?limit=${limit}&skip=${nextSkip}`, { cache: "no-store" })
+        const url = selectedCategory === "all"
+            ? `https://dummyjson.com/products?limit=${limit}&skip=${nextSkip}`
+            : `https://dummyjson.com/products/category/${selectedCategory}?limit=${limit}&skip=${nextSkip}`;
+
+        fetch(url, { cache: "no-store" })
             .then(res => res.json())
             .then(data => {
                 setProducts(prev => [...prev, ...data.products]);
@@ -58,9 +96,8 @@ export function Products() {
     };
 
     const categories = useMemo(() => {
-        const unique = Array.from(new Set(products.map(p => p.category)));
-        return ["all", ...unique];
-    }, [products]);
+        return ["all", ...categoriesList];
+    }, [categoriesList]);
 
     const filteredAndSortedProducts = useMemo(() => {
         let result = [...products];
@@ -69,10 +106,6 @@ export function Products() {
             result = result.filter(p =>
                 p.title.toLowerCase().includes(searchQuery.toLowerCase().trim())
             );
-        }
-
-        if (selectedCategory !== "all") {
-            result = result.filter(p => p.category === selectedCategory);
         }
 
         if (sortBy === "price-asc") {
@@ -86,7 +119,7 @@ export function Products() {
         }
 
         return result;
-    }, [products, searchQuery, selectedCategory, sortBy]);
+    }, [products, searchQuery, sortBy]);
 
     if (loading) {
         return (
@@ -124,7 +157,7 @@ export function Products() {
                         )}
                     </div>
 
-                    {/* კატეგორიების ფილტრი */}
+                    {/* კატეგორიების ფილტრი (სრული სიით) */}
                     <select
                         value={selectedCategory}
                         onChange={(e) => setSelectedCategory(e.target.value)}
@@ -205,7 +238,7 @@ export function Products() {
             </div>
 
             {/* მეტის ნახვა (Load More) ღილაკი */}
-            {products.length < total && searchQuery === "" && selectedCategory === "all" && (
+            {products.length < total && searchQuery === "" && (
                 <div className="flex justify-center pt-8 pb-4">
                     <button
                         onClick={handleLoadMore}
